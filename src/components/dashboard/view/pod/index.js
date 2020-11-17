@@ -1,4 +1,6 @@
-import React, {Component} from 'react';
+import React, {useRef} from 'react';
+import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 //import ViewStack from './ViewStack';
 // import PodActions from '../actions/PodActions';
@@ -14,42 +16,9 @@ import React, {Component} from 'react';
 
 require('./style.scss');
 
-class Pod extends Component {
+const Pod = ({pod, dragStart, maximize}) => {
 
-    // mixins: [Reflux.connect(AppStore)],
-
-    constructor(props) {
-        super(props);
-
-        this.node = React.createRef();
-
-        this.state = {
-            over : false,
-            overButton : false,
-            minimizedTop : 0,
-            minimizedLeft : 0,
-            minimizedWidth : 0,
-            minimizedHeight : 0,
-        };
-    }
-
-    // componentDidMount = () => {
-    //     console.log('Pod: componentDidMount');
-    //
-    //     // this.loadPod();
-    //
-    //     // Listen for end of resize
-    //     this.node.current.addEventListener('webkitTransitionEnd', this.onTransitionEnd, false);
-    //     this.node.current.addEventListener('transitionend', this.onTransitionEnd, false);
-    // };
-
-    // componentWillUnmount = () => {
-    //     console.log('Pod: componentWillUnmount');
-    //
-    //     // Remove event listeners
-    //     this.node.current.removeEventListener('webkitTransitionEnd', this.onTransitionEnd, false);
-    //     this.node.current.removeEventListener('transitionend', this.onTransitionEnd, false);
-    // };
+    const node = useRef(null);
 
     // loadPod = () => {
     //     let canvas, chartData, options, podModel, chart;
@@ -244,208 +213,111 @@ class Pod extends Component {
     //     }
     // };
 
-    onMouseOver = () => {
-        //console.log('Pod: onMouseOver');
-        this.setState({
-            over : true
-        });
-    };
-
-    onMouseOut = () => {
-        //console.log('Pod: onMouseOut');
-        this.setState({
-            over : false
-        });
-    };
-
-    onMouseDown = (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-
-        if (this.state.overButton){
-            return
-        }
-
-        // only left mouse button
-        if (e.button !== 0){
-            return
-        }
-
-        //console.log('Pod: onMouseDown');
-
-        let dragElement; //, startX, startY;
-
-        // Set pod class to dragging to remove transition css
-        this.props.pod.dragging = true;
-
-        // Get drag element
-        dragElement = React.findDOMNode(this);
-        dragElement.style.zIndex = 1;
-
-        // Get startX and startY
-        // startX = e.clientX;
-        // startY = e.clientY;
-
-        // PodActions.dragPodStart(dragElement, startX, startY);
-
-    };
-
-    onBtnMouseOver = (e) => {
-        //console.log('Pod: onBtnMouseOver');
-        this.setState({
-            overButton : true
-        });
-    };
-
-    onBtnMouseOut = (e) => {
-        //console.log('Pod: onBtnMouseOut');
-        this.setState({
-            overButton : false
-        });
-    };
-
-    onMinMaxBtnClick = (e) => {
-        console.log('Pod: onMinMaxBtnClick');
-
-        e.stopPropagation();
-        e.preventDefault();
-
-        const {pod} = this.props;
-
-        if (pod.maximized) {
-
-            // Set maximized pod width and height
-            pod.top = this.state.minimizedTop;
-            pod.left = this.state.minimizedLeft;
-            pod.width = this.state.minimizedWidth;
-            pod.height = this.state.minimizedHeight;
-
-            this.forceUpdate();
-
-            // Listen for end of minimize transition beofre resetting z-index
-            this.node.current.addEventListener('webkitTransitionEnd', this.onMinimizeEnd, false);
-            this.node.current.addEventListener('transitionend', this.onMinimizeEnd, false);
-        } else {
-
-            // Save minimized pod size and location
-            this.setState({
-                minimizedTop : pod.top,
-                minimizedLeft : pod.left,
-                minimizedWidth : pod.width,
-                minimizedHeight : pod.height
-            })
-
-            // Set maximized pod width and height
-            pod.top = 10;
-            pod.left = 10;
-            pod.width = this.node.current.offsetParent.clientWidth - 20;
-            pod.height = this.node.current.offsetParent.clientHeight - 20;
-
-            this.node.current.style.zIndex = 1;
-
-            // Listen for end of maximize transition
-            //pod.addEventListener('webkitTransitionEnd', this.onMaximizeEnd, false);
-            //pod.addEventListener('transitionend', this.onMaximizeEnd, false);
-        }
-
-        pod.maximized = !pod.maximized;
-    };
-
-    onTransitionEnd = (e) => {
-        //console.log('Pod: onTransitionEnd');
-        if (e.propertyName === "width" || e.propertyName === "height") {
-            // this.loadPod();
-        }
-    };
-
-    //onMaximizeEnd = (e) => {
+    // const onMouseDown = (e) => {
+    //     e.stopPropagation();
+    //     e.preventDefault();
     //
-    //    console.log('Pod: onMaximizeEnd');
+    //     // if (this.state.overButton) {
+    //     //     return
+    //     // }
+    //     //
+    //     // // only left mouse button
+    //     // if (e.button !== 0){
+    //     //     return
+    //     // }
+    //     //
+    //     // let dragElement; //, startX, startY;
+    //     //
+    //     // // Set pod class to dragging to remove transition css
+    //     // this.props.pod.dragging = true;
+    //     //
+    //     // // Get drag element
+    //     // dragElement = React.findDOMNode(this);
+    //     // dragElement.style.zIndex = 1;
     //
-    //    let pod;
+    //     // Get startX and startY
+    //     // startX = e.clientX;
+    //     // startY = e.clientY;
     //
-    //    pod = e.currentTarget;
-    //
-    //    if ( pod )
-    //    {
-    //        pod.removeEventListener('webkitTransitionEnd', this.onMaximizeEnd, false);
-    //        pod.removeEventListener('transitionend', this.onMaximizeEnd, false);
-    //
-    //        this.loadPod();
-    //    }
-    //};
+    //     // PodActions.dragPodStart(dragElement, startX, startY);
+    // };
 
-    onMinimizeEnd = (e) => {
-        console.log('Pod: onMinimizeEnd');
-
-        let pod = e.currentTarget;
-        if (pod) {
-            pod.removeEventListener('webkitTransitionEnd', this.onMinimizeEnd, false);
-            pod.removeEventListener('transitionend', this.onMinimizeEnd, false);
-
-            pod.style.zIndex = '';
-
-            //this.loadPod();
-        }
+    const onMinMaxBtnClick = () => {
+        // e.stopPropagation();
+        // e.preventDefault();
+        maximize(pod.index);
     };
 
-    onDeleteBtnClick = () => {
-        console.log('Pod: onDeleteBtnClick');
+    /* eslint-disable no-unused-vars */
+    const onDragHandleMouseDown = (e) => {
+        e.persist();
+
+        // Get startY
+        dragStart(node.current, e.clientX, e.clientY);
+    };
+
+    const onDragHandleMouseUp = () => {
+        // Get startY
+        //let startY = e.clientY;
+        //dragStart(startY);
+    };
+
+    const onDeleteBtnClick = () => {
         // let pod = React.findDOMNode(this);
         //PodActions.deletePod(this.props.pod);
     };
 
-    render() {
-        // console.log('Pod: render ' + this.props.pod.title);
+    return (
+        <div
+            ref={node}
+            className="pod-component"
+            data-index={pod.index}
+            style={{
+                width: pod.width,
+                height: pod.height,
+                top: pod.top,
+                left: pod.left,
+                zIndex: pod.zIndex
+            }} >
+            <span
+                className="pod-header"  >
+                <div
+                    id="drag-handle"
+                    className={classnames('drag-handle', {
+                        disabled: pod.maximized
+                    })}
+                    onMouseUp={onDragHandleMouseUp}
+                    onMouseDown={onDragHandleMouseDown} />
+                <div className="pod-title">
+                    {pod.title}
+                </div>
+                <div className="separator" />
+                <div>
+                    <button
+                        className={classnames('maximize-btn', {
+                            minimize: pod.maximized
+                        })}
+                        title={pod.maximized ? 'Minimize' : 'Maximize'}
+                        onClick={onMinMaxBtnClick} />
+                    <button
+                        className="delete-btn"
+                        title="Remove"
+                        onClick={onDeleteBtnClick} />
+                </div>
+            </span>
+            <div className="pod-content" />
+        </div>
+    )
+};
 
-        let buttonBarStyle;
+Pod.propTypes = {
+    pod: PropTypes.object.isRequired,
+    dragStart: PropTypes.func.isRequired,
+    maximize: PropTypes.func.isRequired
+};
 
-        const {pod} = this.props;
-
-        console.log('pod = ' + JSON.stringify(pod));
-
-        // className = pod.dragging ? 'pod drag' : 'pod';
-        buttonBarStyle = this.state.over ? 'pod-header-button-bar show' : 'pod-header-button-bar';
-
-        return (
-            <div
-                ref={this.node}
-                className="pod-component"
-                data-index={pod.index}
-                style={{
-                    width: pod.width,
-                    height: pod.height,
-                    top: pod.top,
-                    left: pod.left
-                }}
-                onMouseOut={this.onMouseOut}
-                onMouseOver={this.onMouseOver} >
-                <span
-                    className="pod-header"
-                    onMouseUp={this.onMouseUp}
-                    onMouseDown={this.onMouseDown}  >
-                    <div className="pod-title">
-                        {pod.title}
-                    </div>
-                    <div className={buttonBarStyle}>
-                        <button
-                            className="pod-min-max-btn"
-                            title="Maximize"
-                            onMouseOver={this.onBtnMouseOver}
-                            onMouseOut={this.onBtnMouseOut}
-                            onClick={this.onMinMaxBtnClick} />
-                        <button
-                            className="delete-btn"
-                            title="Remove"
-                            onMouseOver={this.onBtnMouseOver}
-                            onMouseOut={this.onBtnMouseOut}
-                            onClick={this.onDeleteBtnClick} />
-                    </div>
-                </span>
-                <div className="pod-content" />
-            </div>
-        )
-    }
-}
+Pod.defaultProps = {
+    pod: {}
+};
 
 export default Pod;

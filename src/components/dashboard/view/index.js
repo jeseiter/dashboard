@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import Pod from './pod';
 import DragHighlight from './dragHighlight';
+import {debounce} from 'lodash/function';
 
 // import AppActions from '../actions/AppActions';
 // import PodActions from '../actions/PodActions';
@@ -43,6 +44,8 @@ class View extends Component {
             dragOffsetX : 0,
             dragOffsetY : 0
         };
+
+        this.onResize = debounce(this.onResize, 1000);
     }
 
     componentDidMount = () => {
@@ -55,6 +58,8 @@ class View extends Component {
         // this.listenTo(PodActions.dragPodStart, this.onDragPodStart);
 
         // When view mounts, update pod layout
+
+        window.addEventListener('resize', this.onResize);
         this.updateLayout();
     };
 
@@ -80,41 +85,15 @@ class View extends Component {
         // }
     };
 
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.onResize);
+    };
+
     onResize = () => {
-        //console.log('View: onResize');
-        let w = window.innerWidth - 20;
-        let h = window.innerHeight - 72;
-
-        this.updateLayout(w, h);
+        this.updateLayout();
     };
 
-    updateLayout = (w, h) => {
-        //console.log('View: updateLayout');
-
-        const {view} = this.props;
-
-        view.width = w ? w : window.innerWidth - 20; //domNode.clientWidth;// - ( this.state.isMenuOpen ? 330 : 0 );
-        view.height = h ? h : window.innerHeight - 75; //domNode.clientWidth;// - ( this.state.isMenuOpen ? 330 : 0 );
-
-        switch (view.layout) {
-
-            case 'pod' :
-                this.updatePodLayout();
-                break;
-
-            case 'mdi' :
-                break;
-
-            case 'template' :
-                this.updateTemplateLayout();
-                break;
-
-            default :
-                break;
-        }
-    };
-
-    updatePodLayout = () => {
+    updateLayout = () => {
         let pod, podWidth, podHeight, sqrt, numPods, numRows, numCols, row = 0, col = 0, w, h;
 
         const {view} = this.props;
@@ -123,11 +102,15 @@ class View extends Component {
         sqrt = Math.floor(Math.sqrt(numPods));
         numCols = Math.ceil(numPods / sqrt);
         numRows = Math.ceil(numPods / numCols);
-        w = this.node.current.clientWidth; // - ( this.state.isMenuOpen ? 330 : 0 );
-        h = this.node.current.clientHeight;
+        w = window.innerWidth; // - ( this.state.isMenuOpen ? 330 : 0 );
+        h = window.innerHeight - 50;
+
+        console.log('client width = ' + w);
+
         podWidth = Math.round((w - PADDING * 2) / numCols - ((POD_GAP * (numCols - 1)) / numCols));
         podHeight = Math.round((h - PADDING * 2) / numRows - ((POD_GAP * (numRows - 1)) / numRows));
 
+        this.pods = [];
         for (let i = 0; i < numPods; i++) {
             if (i % numCols === 0 && i > 0) {
                 row++;
@@ -138,11 +121,13 @@ class View extends Component {
 
             // Set size and position of pod models and highlight models
             pod = {
+                index: i,
                 width: podWidth,
                 height: podHeight,
                 left: col * podWidth + (col + 1) * POD_GAP,
                 top: row === 0 ? POD_GAP : podHeight + 2 * POD_GAP,
-                title: view.pods[i].title
+                title: view.pods[i].title,
+                zIndex: 0
             };
 
             // highlight = {};
@@ -158,96 +143,25 @@ class View extends Component {
         this.forceUpdate();
     };
 
-    updateTemplateLayout = () => {
-        let podModel, podModels, highlightModel, highlightModels, cellWidth, cellHeight,
-        template, numCells, cellModel, cellModels, numRows, numCols, row, col, rowSpan, colSpan, left, top, w, h;
+    onDragStart = (dragElement, startX, startY) => {
+        console.log('View: onDragPodStart');
+        if (this.props.view.selected) {
 
-        //console.log('View: updateTemplateLayout');
+            let dragPod = this.props.view.pods[dragElement.getAttribute('data-index')];
 
-        const {view} = this.props;
+            this.setState({
+                dragPod : dragPod,
+                dragElement: dragElement,
+                dragStartX : startX,
+                dragStartY : startY,
+                dragOffsetX : dragElement.offsetLeft,
+                dragOffsetY : dragElement.offsetTop
+            })
 
-        podModels = view.pods;
-        highlightModels = view.highlights;
-
-        numCells = highlightModels.length;
-
-        template = view.template;
-
-        numCols = template.numCols;
-        numRows = template.numRows;
-        cellModels = template.cells;
-
-        w = view.width;// - ( this.state.isMenuOpen ? 330 : 0 );
-        h = view.height;
-
-        cellWidth = Math.round((w - PADDING * 2) / numCols - ((POD_GAP * (numCols - 1)) / numCols));
-        cellHeight = Math.round((h - PADDING * 2) / numRows - ((POD_GAP * (numRows - 1)) / numRows));
-
-        for (let i = 0; i < numCells; i++) {
-
-            cellModel = cellModels[i];
-
-            col = cellModel.col;
-            row = cellModel.row;
-
-            colSpan = cellModel.colSpan;
-            rowSpan = cellModel.rowSpan;
-
-            // First, we set the top and left of each cell
-            left = col * cellWidth + PADDING;
-            top = row * cellHeight + PADDING;
-
-            if ( col > 0 ) {
-                left += POD_GAP * col;
-            }
-
-            if ( row > 0 ) {
-                top += POD_GAP * row;
-            }
-
-            // Next, we set the width and height of a cell
-            w = ( colSpan * cellWidth ) + ( (colSpan - 1) * POD_GAP );
-            h = ( rowSpan * cellHeight ) + ( (rowSpan - 1) * POD_GAP );
-
-            // Set size and position of pod models and highlight models
-            podModel = podModels[i];
-
-            if (podModel) {
-                podModel.width = w + 'px';
-                podModel.height = h + 'px';
-                podModel.left = left + 'px';
-                podModel.top = top + 'px';
-            }
-
-            highlightModel = highlightModels[i];
-            highlightModel.width = w + 'px';
-            highlightModel.height = h + 'px';
-            highlightModel.left  = left + 'px';
-            highlightModel.top  = top + 'px';
+            document.addEventListener('mousemove', this.onMouseMove);
+            document.addEventListener('mouseup', this.onMouseUp);
         }
-
-        this.forceUpdate();
     };
-
-    // onDragPodStart = (dragElement, startX, startY) => {
-    //     //console.log('View: onDragPodStart');
-    //     if (this.props.view.selected) {
-    //
-    //         let dragPod = this.props.view.pods[dragElement.getAttribute('data-index')];
-    //
-    //         this.setState({
-    //             dragPod : dragPod,
-    //             dragElement: dragElement,
-    //             dragStartX : startX,
-    //             dragStartY : startY,
-    //             dragOffsetX : dragElement.offsetLeft,
-    //             dragOffsetY : dragElement.offsetTop
-    //         })
-    //
-    //         document.addEventListener('mousemove', this.onMouseMove);
-    //         document.addEventListener('mouseup', this.onMouseUp);
-    //     }
-    // };
 
     onMouseMove = (e) => {
         //console.log('View: onMouseMove');
@@ -745,33 +659,67 @@ class View extends Component {
         }
     };
 
+    onDragStart = () => {
+        console.log('onDragStart');
+    };
+
+    onMaximizePod = (index) => {
+        let pod = this.pods[index];
+        if (pod.maximized) {
+            pod.width = pod.originalWidth;
+            pod.height = pod.originalHeight;
+            pod.top = pod.originalTop;
+            pod.left = pod.originalLeft;
+            pod.zIndex = 0;
+        } else {
+            pod.originalWidth = pod.width;
+            pod.originalHeight = pod.height
+            pod.originalTop = pod.top;
+            pod.originalLeft = pod.left;
+
+            pod.width = window.innerWidth - 20;
+            pod.height = window.innerHeight - 50 - 20;
+            pod.top = 10;
+            pod.left = 10;
+
+            pod.zIndex = 1;
+        }
+
+        pod.maximized = !pod.maximized
+
+        this.forceUpdate();
+    };
+
     sortByIndex = (a, b) => {
         return a.index - b.index;
     };
 
     render() {
-        // console.log('View: render ' + this.props.view.title);
-        // let className = view.selected ? 'view selected' : 'view';
         return (
             <div
                 ref={this.node}
                 className="view-component"
                 style={{width: window.innerWidth, height: window.innerHeight - 48}} >
                 {
-                    (this.highlights || []).map((highlight, index) => {
+                    this.pods.map((highlight, index) => {
                         return (
                             <DragHighlight
                                 key={index}
-                                highlight={highlight} />
+                                top={highlight.top}
+                                left={highlight.left}
+                                width={highlight.width}
+                                height={highlight.height}  />
                         );
                     })
                 }
                 {
-                    (this.pods || []).map((pod, index) => {
+                    this.pods.map((pod, index) => {
                         return (
                             <Pod
                                 key={index}
-                                pod={pod} />
+                                pod={pod}
+                                dragStart={this.onDragStart}
+                                maximize={this.onMaximizePod}/>
                         );
                     })
                 }
