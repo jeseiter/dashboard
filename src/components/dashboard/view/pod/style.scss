@@ -1,0 +1,58 @@
+.pod-component {
+    position: absolute;
+    border: 1px solid #282C34;
+
+    .pod-header {
+        display: flex;
+        height: 20px;
+
+        padding: 5px 10px 5px 10px;
+        border-bottom: 1px solid red; //#282C34;
+
+        .pod-title {
+            font-family: StreetB-Medium;
+            font-size: 12px;
+            color: #04304A;
+
+            line-height: 20px;
+        }
+
+        .maximize-btn {
+            width: 24px;
+            height: 24px;
+            border-style: none;
+            outline: none;
+            background: url('./assets/maximize-24.svg') 0 0 no-repeat;
+            cursor: pointer;
+            // margin: 7px 5px 0 8px;
+
+            &:hover {
+                background: url('./assets/maximize_24.svg') 0 0 no-repeat;
+            }
+
+            &:disabled {
+                cursor: default;
+                opacity: 0.2;
+            }
+        }
+
+        .delete-btn {
+            width: 24px;
+            height: 24px;
+            border-style: none;
+            outline: none;
+            background: url('./assets/delete.svg') 0 0 no-repeat;
+            cursor: pointer;
+            // margin: 7px 5px 0 8px;
+
+            &:hover {
+                background: url('./assets/delete-over.svg') 0 0 no-repeat;
+            }
+
+            &:disabled {
+                cursor: default;
+                opacity: 0.2;
+            }
+        }
+    }
+}
