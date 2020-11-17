@@ -1,0 +1,35 @@
+.tab-component {
+    height: 48px;
+    border: none;
+    background: none;
+    cursor: pointer;
+
+    font-family: StreetB-Medium;
+    font-size: 11px;
+    color: #90979E;
+    white-space: nowrap;
+
+    margin: 0 20px 0 20px;
+    text-align: center;
+    line-height: 48px; // to center vertically
+
+    &:hover {
+        color: #0EB2F0;
+    }
+
+    &.selected {
+        color: #0EB2F0;
+
+        &.required {
+            color: #0EB2F0 !important;
+        }
+    }
+
+    &.required {
+        color: #FF5353 !important;
+    }
+
+    &:last-child {
+        border-right: none;
+    }
+}

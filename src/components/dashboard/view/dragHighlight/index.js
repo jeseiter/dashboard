@@ -1,61 +1,39 @@
-import React, {Component} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
-class DragHighlight extends Component {
+require('./style.scss');
 
-    constructor(props) {
-        super(props);
+const DragHighlight = ({top, left, width, height, dragging}) => {
 
-        this.state = {
-            hidden: true
-        };
-    }
+    return (
+        <div
+            className={classnames('highlight-component', {
+                dragging: dragging
+            })}
+            style={{
+                top: top,
+                left: left,
+                width: width,
+                height: height
+            }} />
+    );
+};
 
-    componentDidMount = () => {
-        console.log('DragHighlight: componentDidMount');
+DragHighlight.propTypes = {
+    top: PropTypes.number.isRequired,
+    left: PropTypes.number.isRequired,
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired,
+    dragging: PropTypes.bool.isRequired
+};
 
-        // First time in highlights are hidden.
-        // Add listener to detect when highlights have been properly sized.
-        // Once sized, we will show highlights
-        // if (this.state.hidden) {
-        //     this.node.current.addEventListener('webkitTransitionEnd', this.onTransitionEnd, false);
-        //     this.node.current.addEventListener('transitionend', this.onTransitionEnd, false);
-        // }
-    };
-
-    onTransitionEnd = (e) => {
-        console.log('DragHighlight: onTransitionEnd');
-        let highlight = e.currentTarget;
-
-        if (highlight) {
-            highlight.removeEventListener('webkitTransitionEnd', this.onTransitionEnd, false);
-            highlight.removeEventListener('transitionend', this.onTransitionEnd, false);
-
-            this.setState({
-                hidden: false
-            });
-        }
-    };
-
-    render() {
-        console.log('DragHighlight: render');
-
-        const {highlight} = this.props;
-        let className = this.state.hidden ? 'drag-highlight hidden' : 'drag-highlight';
-
-        return (
-            <div
-                ref={this.node}
-                className={className}
-                data-index={highlight.index}
-                style={{
-                    width: highlight.width,
-                    height : highlight.height,
-                    top : highlight.top,
-                    left: highlight.left
-                }}>
-            </div>
-        )
-    }
-}
+DragHighlight.defaultProps = {
+    top: 0,
+    left: 0,
+    width: 0,
+    height: 0,
+    dragging: false
+};
 
 export default DragHighlight;
