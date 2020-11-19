@@ -1,0 +1,9 @@
+export const LOAD_VIEWS = 'DASHBOARD.LOAD.VIEWS';
+export const LOAD_VIEWS_SUCCESS = 'DASHBOARD.LOAD.VIEWS.SUCCESS';
+export const LOAD_VIEWS_ERROR = 'DASHBOARD.LOAD.VIEWS.ERROR';
+
+const Actions = {
+    LOAD_VIEWS, LOAD_VIEWS_SUCCESS, LOAD_VIEWS_ERROR
+};
+
+export default Actions;

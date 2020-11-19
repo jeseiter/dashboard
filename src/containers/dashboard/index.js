@@ -1,14 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import TabBar from "../tab-bar";
-import View from "./view";
+import TabBar from "../../components/tab-bar";
+import View from "../../components/view";
+import {connect} from 'react-redux';
+import Actions from './actions';
 
 require('./style.scss');
 
 class Dashboard extends React.Component {
 
     static propTypes = {
-        views: PropTypes.array.isRequired
+        views: PropTypes.array.isRequired,
+        loadViews: PropTypes.func
     };
 
     static defaultProps = {
@@ -26,12 +29,18 @@ class Dashboard extends React.Component {
                 layout: 'pod'
             },
             {
-                title: 'View 2'
+                title: 'View 2',
+                pods: []
             },
             {
-                title: 'View 3'
+                title: 'View 3',
+                pods: []
             }
         ]
+    };
+
+    componentDidMount = () => {
+        // this.props.loadViews();
     };
 
     onSelect = () => {
@@ -52,4 +61,15 @@ class Dashboard extends React.Component {
     }
 }
 
-export default Dashboard;
+
+export const mapStateToProps = (state) => ({
+    views: state.views
+});
+
+export const mapDispatchToProps = (dispatch) => {
+    return {
+        loadViews: () => dispatch({type: Actions.LOAD_VIEWS}),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

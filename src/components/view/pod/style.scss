@@ -19,12 +19,12 @@
             height: 20px;
             border-style: none;
             outline: none;
-            background: url('./assets/drag-handle.svg') 0 0 no-repeat;
+            background: url('assets/drag-handle.svg') 0 0 no-repeat;
             margin: 3px 10px 0 0;
             cursor: grabbing;
 
             &:hover {
-                background: url('./assets/drag-handle-over.svg') 0 0 no-repeat;
+                background: url('assets/drag-handle-over.svg') 0 0 no-repeat;
             }
 
             &.disabled {
@@ -36,11 +36,13 @@
 
         .pod-title {
             font-family: StreetB-Medium;
-            font-size: 12px;
+            font-size: 14px;
             color: #04304A;
             text-transform: uppercase;
 
-            line-height: 24px;
+            padding-top: 6px;
+
+            // line-height: 24px;
         }
 
         .separator {
@@ -52,12 +54,12 @@
             height: 24px;
             border-style: none;
             outline: none;
-            background: url('./assets/maximize.svg') 0 0 no-repeat;
+            background: url('assets/maximize.svg') 0 0 no-repeat;
             cursor: pointer;
             margin: 0 10px;
 
             &:hover {
-                background: url('./assets/maximize-over.svg') 0 0 no-repeat;
+                background: url('assets/maximize-over.svg') 0 0 no-repeat;
             }
 
             &:disabled {
@@ -66,10 +68,10 @@
             }
 
             &.minimize {
-                background: url('./assets/minimize.svg') 0 0 no-repeat;
+                background: url('assets/minimize.svg') 0 0 no-repeat;
 
                 &:hover {
-                    background: url('./assets/minimize-over.svg') 0 0 no-repeat;
+                    background: url('assets/minimize-over.svg') 0 0 no-repeat;
                 }
             }
         }
@@ -79,11 +81,11 @@
             height: 24px;
             border-style: none;
             outline: none;
-            background: url('./assets/close.svg') 0 0 no-repeat;
+            background: url('assets/close.svg') 0 0 no-repeat;
             cursor: pointer;
 
             &:hover {
-                background: url('./assets/close-over.svg') 0 0 no-repeat;
+                background: url('assets/close-over.svg') 0 0 no-repeat;
             }
 
             &:disabled {
@@ -91,5 +93,14 @@
                 opacity: 0.2;
             }
         }
+    }
+
+    .pod-canvas {
+        padding: 10px;
+    }
+
+    &.dragging {
+        z-index: 999;
+        -webkit-transition: none
     }
 }
