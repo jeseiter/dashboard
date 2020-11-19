@@ -129,7 +129,6 @@ class View extends Component {
     };
 
     onDragStart = (dragElement, startX, startY) => {
-        console.log('onDragStart');
 
         // Set dragging
         this.pods[dragElement.getAttribute('data-index')].dragging = true;
@@ -250,6 +249,9 @@ class View extends Component {
     positionDragElement = (dragIndex, dropIndex) => {
         let pod, highlight;
 
+        console.log('positionDragElement: dragIndex = ' + dragIndex);
+        console.log('positionDragElement: dropIndex = ' + dropIndex);
+
         pod = this.pods[dragIndex];
         highlight = this.highlights[dropIndex];
 
@@ -262,6 +264,8 @@ class View extends Component {
         pod.left = highlight.left;
         pod.index = dropIndex;
         pod.dragging = false;
+
+        // console.log('pod = ' + JSON.stringify(pod));
 
         this.forceUpdate();
 
@@ -471,25 +475,9 @@ class View extends Component {
         pods = view.pods;
         highlights = view.highlights;
 
-        switch (view.layout) {
-
-            case 'pod' :
-                // remove podModel and highlight model
-                pods.splice(index, 1);
-                highlights.splice(index, 1);
-                break;
-
-            case 'mdi' :
-                break;
-
-            case 'template' :
-
-                pods[index] = null;
-                break;
-
-            default :
-                break;
-        }
+        // remove podModel and highlight model
+        pods.splice(index, 1);
+        highlights.splice(index, 1);
 
         for (let i = 0; i < pods.length; i++) {
             if (pods[i]) {
@@ -502,41 +490,6 @@ class View extends Component {
         })
 
         // StoreActions.updateView(view);
-    };
-
-    addDragHighlights = () => {
-        //console.log('View: addDragHighlights');
-        let view, numHighlights;
-
-        view = this.props.view;
-        view.highlights = [];
-
-        switch (view.layout) {
-
-            case 'pod' :
-                numHighlights = view.pods.length;
-                break;
-
-            case 'mdi' :
-                break;
-
-            case 'template' :
-                numHighlights = view.template.cells.length;
-                break;
-
-            default :
-                break;
-        }
-
-        for (let i = 0; i < numHighlights; i++) {
-            view.highlights.push({
-                index : i,
-                top : 0,
-                left : 0,
-                width : 0,
-                height : 0
-            });
-        }
     };
 
     onMaximizePod = (index) => {
@@ -581,7 +534,7 @@ class View extends Component {
                         return (
                             <DragHighlight
                                 key={index}
-                                highlight={highlight}  />
+                                highlight={highlight} />
                         );
                     })
                 }
@@ -592,7 +545,7 @@ class View extends Component {
                                 key={index}
                                 pod={pod}
                                 dragStart={this.onDragStart}
-                                maximize={this.onMaximizePod}/>
+                                maximize={this.onMaximizePod} />
                         );
                     })
                 }
