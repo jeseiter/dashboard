@@ -1,12 +1,13 @@
 import React, {useRef} from 'react';
 import PropTypes from 'prop-types';
+import {Bar, Line, Doughnut, HorizontalBar} from 'react-chartjs-2';
 import classnames from 'classnames';
 
 //import ViewStack from './ViewStack';
 // import PodActions from '../actions/PodActions';
 // import AppStore from '../stores/AppStore';
 
-//import $ from 'jquery';
+// import $ from 'jquery';
 
 //var Chart = require('../../libs/Chart.min.js').Chart;
 
@@ -20,7 +21,7 @@ const Pod = ({pod, dragStart, maximize}) => {
 
     const node = useRef(null);
 
-    // loadPod = () => {
+    // const loadPod = () => {
     //     let canvas, chartData, options, podModel, chart;
     //
     //     podModel = this.props.pod;
@@ -213,38 +214,7 @@ const Pod = ({pod, dragStart, maximize}) => {
     //     }
     // };
 
-    // const onMouseDown = (e) => {
-    //     e.stopPropagation();
-    //     e.preventDefault();
-    //
-    //     // if (this.state.overButton) {
-    //     //     return
-    //     // }
-    //     //
-    //     // // only left mouse button
-    //     // if (e.button !== 0){
-    //     //     return
-    //     // }
-    //     //
-    //     // let dragElement; //, startX, startY;
-    //     //
-    //     // // Set pod class to dragging to remove transition css
-    //     // this.props.pod.dragging = true;
-    //     //
-    //     // // Get drag element
-    //     // dragElement = React.findDOMNode(this);
-    //     // dragElement.style.zIndex = 1;
-    //
-    //     // Get startX and startY
-    //     // startX = e.clientX;
-    //     // startY = e.clientY;
-    //
-    //     // PodActions.dragPodStart(dragElement, startX, startY);
-    // };
-
     const onMinMaxBtnClick = () => {
-        // e.stopPropagation();
-        // e.preventDefault();
         maximize(pod.index);
     };
 
@@ -270,7 +240,9 @@ const Pod = ({pod, dragStart, maximize}) => {
     return (
         <div
             ref={node}
-            className="pod-component"
+            className={classnames('pod-component', {
+                dragging: pod.dragging
+            })}
             data-index={pod.index}
             style={{
                 width: pod.width,
@@ -305,7 +277,32 @@ const Pod = ({pod, dragStart, maximize}) => {
                         onClick={onDeleteBtnClick} />
                 </div>
             </span>
-            <div className="pod-content" />
+            <div className="pod-canvas" >
+                {pod.type === 'bar' ?
+                    <Bar
+                        data={pod.data}
+                        options={pod.options} />
+                    : null
+                }
+                {pod.type === 'line' ?
+                    <Line
+                        data={pod.data}
+                        options={pod.options} />
+                    : null
+                }
+                {pod.type === 'doughnut' ?
+                    <Doughnut
+                        data={pod.data}
+                        options={pod.options} />
+                    : null
+                }
+                {pod.type === 'horizontalBar' ?
+                    <HorizontalBar
+                        data={pod.data}
+                        options={pod.options} />
+                    : null
+                }
+            </div>
         </div>
     )
 };
