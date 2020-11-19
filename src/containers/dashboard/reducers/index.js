@@ -1,7 +1,7 @@
 import Actions from '../actions';
 
 /* eslint-disable no-redeclare, no-shadow */
-export default (state = {}, action) => {
+const DashboardReducer = (state = {}, action) => {
 
     let views;
 
@@ -31,4 +31,7 @@ export default (state = {}, action) => {
 
     return state;
 };
+
+
+export default DashboardReducer
 
